@@ -1,11 +1,11 @@
 #include <avr/io.h>
-#include <stdint.h>                     // needed for uint8_t
+#include <stdint.h>                     
 
 #include <avr/interrupt.h>
 
 
 
-#define FOSC 16000000                       // Clock Speed
+#define FOSC 16000000                       
 #define BAUD 9600
 #define MYUBRR FOSC/16/BAUD -1
 
@@ -17,28 +17,30 @@ int t;
 
 int main( void )
 {
-	DDRB=0xFF;
-	DDRD|=1<<PORTD1;
+	DDRB=0xFF;               //инициализирует порт В как выход (output)
+	//DDRD|=1<<PORTD1;        // таким макаром подаётся логическая 1 на первую ножку порта D
 	/*Set baud rate */
-	UBRR0H = (MYUBRR >> 8);
+	UBRR0H = (MYUBRR >> 8); //установка скорости передачи
 	UBRR0L = MYUBRR;
 	
-	UCSR0B |= (1 << RXEN0) | (1 << TXEN0);      // Enable receiver and transmitter
-	UCSR0B |= (1 << RXCIE0);                    // Enable reciever interrupt
-	UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00);    // Set frame: 8data, 1 stp
+	UCSR0B |= (1 << RXEN0) | (1 << TXEN0);      //контакты RX TX 
+	UCSR0B |= (1 << RXCIE0);                    
+	UCSR0C |= (1 << UCSZ01) | (1 << UCSZ00);    
 
-	sei();                                      // Lets not forget to enable interrupts =P
+	sei();                                      
 
 	while(1)
 	{
-		;                                      // Main loop
+		;                                     
 	}
 }
 
-ISR (USART_RX_vect)
+ISR (USART_RX_vect)             // Изначально это была функция эхо- принимала данные с блютуз и обратно отправляла
 {
 	//t=UDR0;
 	//PORTB = t;
-	ReceivedChar = UDR0;                       // Read data from the RX buffer
-	PORTB = ReceivedChar;                       // Write the data to the TX buffer
+	ReceivedChar = UDR0;                       //Данные пришедшие с блютуз
+	PORTB = ReceivedChar;                       // отправляем данные на порт В микроконтроллера
+	
+	/* в общем затык гдето в этой функции, прописывал if(), не помогло*/
 }
